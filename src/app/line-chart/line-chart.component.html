@@ -1,0 +1,17 @@
+<select  class='form-control' 
+        (change)="onChangeObj($event)" [value]='0'>
+  <option value='0'>Normal</option>
+  <option value='1'>Medum</option>
+  <option value='2'>Hard</option>
+</select>
+
+<select  class='form-control' 
+        (change)="onChangeObj($event)" [value]='60'>
+  <option value='10'>10 min</option>
+  <option value='30'>30 min</option>
+  <option value='60'>60 min</option>
+</select>
+
+<svg width="960" height="560" id="areaLineChartSVG"></svg>  
+
+<svg width="960" height="560"  id="closedBarChartSVG"></svg>  
