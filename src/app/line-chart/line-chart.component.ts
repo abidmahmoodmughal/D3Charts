@@ -44,7 +44,7 @@ export class LineChartComponent implements OnInit {
 	private xAxis: any;
 	private xAxis2: any;
 	private yAxis: any;
-
+	private yAxis2: any;
 
 	private context: any;
 	private brush: any;
@@ -128,6 +128,7 @@ export class LineChartComponent implements OnInit {
 		this.xAxis2 = d3Axis.axisBottom(this.x2).tickFormat(d31.timeFormat("%H:%M:%S"));
 
 		this.yAxis = d3Axis.axisLeft(this.y);
+		this.yAxis2 = d3Axis.axisLeft(this.y2);
 
 		// Configure the Y Axis  
 
@@ -241,6 +242,10 @@ export class LineChartComponent implements OnInit {
 		this.focus.append('g')
 			.attr('class', 'axis axis--y')
 			.call(this.yAxis);
+		
+		this.context.append('g')
+			.attr('class', 'axis axis--y')
+			.call(this.yAxis2);
 
 		this.context.append('path')
 	        .datum(this.data)
