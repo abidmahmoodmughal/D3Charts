@@ -29,6 +29,7 @@ export class LineChartComponent implements OnInit {
 	title = 'Line Chart';
 	selected = 0;
 	data: any[] = data.points;
+	selectedTimeOption = 60;
 
 
 	private margin = { top: 20, right: 20, bottom: 110, left: 40 };
@@ -112,6 +113,31 @@ export class LineChartComponent implements OnInit {
 		this.addXandYAxis();
 		this.drawLineAndPath();
 
+		this.addXandYAxisClosedBar();
+		this.drawLineAndPathClosedBar();
+	}
+
+	onChangeObjTimeDropDown(newObj){		
+		this.selectedTimeOption = parseInt(newObj.target.value);
+		
+		if(this.selectedTimeOption===10 ||this.selectedTimeOption===30){
+			this.data = data.points.slice(0,this.selectedTimeOption);
+		}
+		else if(this.selectedTimeOption===60){
+			this.data = data.points;
+		}
+		
+		d3.selectAll("svg").remove();
+		
+		var svg = d3.select("app-line-chart").append("svg").attr("id","areaLineChartSVG").attr("width", "960").attr("height", "560"),
+			inner = svg.append("g");
+
+		 svg = d3.select("app-line-chart").append("svg").attr("id","closedBarChartSVG").attr("width", "960").attr("height", "560"),
+
+		this.buildSvg();
+		this.addXandYAxis();
+		this.drawLineAndPath();
+		
 		this.addXandYAxisClosedBar();
 		this.drawLineAndPathClosedBar();
 	}
@@ -232,7 +258,10 @@ export class LineChartComponent implements OnInit {
 
 		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S");  // Wed Apr 01 2020 15:30:00 GMT-0500 (Eastern Daylight Time)
 
-		this.x.domain([inputDateFormat(data.starttime), inputDateFormat(data.endtime)]);
+        var endDate = inputDateFormat(data.starttime);
+		endDate.setMinutes(endDate.getMinutes()+this.selectedTimeOption);
+
+		this.x.domain([inputDateFormat(data.starttime), endDate]);
 		
 		this.y.domain([0, d3Array.max(this.data, (d: any) => { return d["Array"][this.selected]; })])
 
@@ -393,7 +422,12 @@ export class LineChartComponent implements OnInit {
 
 		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S");  // Wed Apr 01 2020 15:30:00 GMT-0500 (Eastern Daylight Time)
 
-		this.xClosedBar.domain([inputDateFormat(data.starttime), inputDateFormat(data.endtime)]);
+		var endDate = inputDateFormat(data.starttime);
+		endDate.setMinutes(endDate.getMinutes()+this.selectedTimeOption);
+
+		//this.x.domain([inputDateFormat(data.starttime), endDate]);
+
+		this.xClosedBar.domain([inputDateFormat(data.starttime), endDate]);
 		
 		this.yClosedBar.domain([0, d3Array.max(this.data, (d: any) => { return d["Array"][this.selected]; })])
 
