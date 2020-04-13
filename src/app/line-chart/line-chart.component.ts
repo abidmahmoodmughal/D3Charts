@@ -99,7 +99,7 @@ export class LineChartComponent implements OnInit {
 	}
 
 	onChangeObj(newObj) {
-		console.log(newObj);
+		//console.log(newObj);
 		this.selected = parseInt(newObj.target.value);
 		
 		d3.selectAll("svg").remove();
@@ -184,6 +184,7 @@ export class LineChartComponent implements OnInit {
 
 		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S");
 
+		/*
 		this.area = d3Shape.area()
 			.curve(d3Shape.curveMonotoneX)
 			.x((d: any) => this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
@@ -198,6 +199,7 @@ export class LineChartComponent implements OnInit {
 				.add(d.time, 'minutes')))
 			.y0(this.height2)
 			.y1((d: any) => this.y2(d["Array"][this.selected]));
+			*/
 
 		this.svg.append('defs').append('clipPath')
 			.attr('id', 'clip')
@@ -223,7 +225,7 @@ export class LineChartComponent implements OnInit {
 		// re generate bars
 		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S"); 
 		this.focus.append("g").selectAll(".barsG")//.append("g")
-		.data(data.points).enter().append("rect")
+		.data(this.data).enter().append("rect")
 		.attr("x",(d:any)=>{
 			return this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
 			.add(d.time, 'minutes'));
@@ -270,7 +272,7 @@ export class LineChartComponent implements OnInit {
 		
 		// create bars
 		this.focus.append("g").selectAll(".barsG")//.append("g")
-		.data(data.points).enter().append("rect")
+		.data(this.data).enter().append("rect")
 		.attr("x",(d:any)=>{
 			return this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
 			.add(d.time, 'minutes'));
@@ -297,7 +299,7 @@ export class LineChartComponent implements OnInit {
 
 		// create brush bars
 		this.context.append("g").selectAll(".barsG")//.append("g")
-		.data(data.points).enter().append("rect")
+		.data(this.data).enter().append("rect")
 		.attr("x",(d:any)=>{
 			return this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
 			.add(d.time, 'minutes'));
@@ -365,24 +367,6 @@ export class LineChartComponent implements OnInit {
 
 		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S");
 
-		/*
-		this.areaClosedBar = d3Shape.area()
-			.curve(d3Shape.curveMonotoneX)
-			.x((d: any) => this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
-				.add(d.time, 'minutes'))
-			)
-			.y0(this.height)
-			.y1((d: any) => this.y(d["Array"][this.selected]));
-
-		this.area2ClosedBar = d3Shape.area()
-			.curve(d3Shape.curveMonotoneX)
-			.x((d: any) => this.x2(moment(inputDateFormat(data.starttime), "hh:00:00")
-				.add(d.time, 'minutes')))
-			.y0(this.height2)
-			.y1((d: any) => this.y2(d["Array"][this.selected]));
-		*/
-		
-
 		this.svgClosedBar.append('defs').append('clipPath')
 			.attr('id', 'clip')
 			.append('rect')
@@ -444,7 +428,7 @@ export class LineChartComponent implements OnInit {
 
 		// create bars
 		this.focusClosedBar.append("g").selectAll(".barsG")//.append("g")
-		.data(data.points).enter().append("rect")
+		.data(this.data).enter().append("rect")
 		.attr("x",(d:any)=>{
 			return this.xClosedBar(moment(inputDateFormat(data.starttime), "hh:00:00")
 			.add(d.time, 'minutes'));
@@ -478,7 +462,7 @@ export class LineChartComponent implements OnInit {
 		
 		// brush of 2nd chart
 		this.contextClosedBar.append("g").selectAll(".barsG")//.append("g")
-		.data(data.points).enter().append("rect")
+		.data(this.data).enter().append("rect")
 		.attr("x",(d:any)=>{
 			return this.xClosedBar(moment(inputDateFormat(data.starttime), "hh:00:00")
 			.add(d.time, 'minutes'));
