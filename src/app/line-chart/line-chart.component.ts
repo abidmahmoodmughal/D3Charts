@@ -58,12 +58,12 @@ export class LineChartComponent implements OnInit {
 	private line: d3Shape.Line<[number, number]>; // this is line defination
 	private area: d3Shape.Area<[number, number]>; // this is line defination  
 
-	private svgClosedBar:any;
+	private svgClosedBar: any;
 	private xClosedBar: any;
 	private x2ClosedBar: any;
 	private yClosedBar: any;
 	private y2ClosedBar: any;
-	
+
 	private xAxisClosedBar: any;
 	private xAxis2ClosedBar: any;
 	private yAxisClosedBar: any;
@@ -101,15 +101,15 @@ export class LineChartComponent implements OnInit {
 	onChangeObj(newObj) {
 		//console.log(newObj);
 		this.selected = parseInt(newObj.target.value);
-		
+
 		d3.selectAll("svg").remove();
-		
-		var svg = d3.select("app-line-chart").append("svg").attr("id","areaLineChartSVG").attr("width", "960").attr("height", "560"),
+
+		var svg = d3.select("app-line-chart").select("#chart1").append("svg").attr("id", "areaLineChartSVG").attr("width", "960").attr("height", "560"),
 			inner = svg.append("g");
 
-		 svg = d3.select("app-line-chart").append("svg").attr("id","closedBarChartSVG").attr("width", "960").attr("height", "560"),
+		svg = d3.select("app-line-chart").select("#chart2").append("svg").attr("id", "closedBarChartSVG").attr("width", "960").attr("height", "560"),
 
-		this.buildSvg();
+			this.buildSvg();
 		this.addXandYAxis();
 		this.drawLineAndPath();
 
@@ -117,38 +117,77 @@ export class LineChartComponent implements OnInit {
 		this.drawLineAndPathClosedBar();
 	}
 
-	onChangeObjTimeDropDown(newObj){		
+	onChangeObjTimeDropDown(newObj) {
 		this.selectedTimeOption = parseInt(newObj.target.value);
-		
-		if(this.selectedTimeOption===10 ||this.selectedTimeOption===30){
-			this.data = data.points.slice(0,this.selectedTimeOption);
+
+		if (this.selectedTimeOption === 10 || this.selectedTimeOption === 30) {
+			this.data = data.points.slice(0, this.selectedTimeOption);
 		}
-		else if(this.selectedTimeOption===60){
+		else if (this.selectedTimeOption === 60) {
 			this.data = data.points;
 		}
-		
+
 		d3.selectAll("svg").remove();
-		
-		var svg = d3.select("app-line-chart").append("svg").attr("id","areaLineChartSVG").attr("width", "960").attr("height", "560"),
+
+		var svg = d3.select("app-line-chart").select("#chart1").append("svg").attr("id", "areaLineChartSVG").attr("width", "960").attr("height", "560"),
 			inner = svg.append("g");
 
-		 svg = d3.select("app-line-chart").append("svg").attr("id","closedBarChartSVG").attr("width", "960").attr("height", "560"),
+		svg = d3.select("app-line-chart").select("#chart2").append("svg").attr("id", "closedBarChartSVG").attr("width", "960").attr("height", "560"),
 
-		this.buildSvg();
+			this.buildSvg();
 		this.addXandYAxis();
 		this.drawLineAndPath();
-		
+
+		this.addXandYAxisClosedBar();
+		this.drawLineAndPathClosedBar();
+	}
+
+	onChangeObjNewChart(newObj) {
+		//console.log(newObj);
+		this.selected = parseInt(newObj.target.value);
+
+		d3.select("#closedBarChartSVG").remove();
+
+		var svg = d3.select("app-line-chart").append("svg").attr("id", "closedBarChartSVG").attr("width", "960").attr("height", "560");
+
+		this.buildSvg();
+
+		/*this.addXandYAxis();
+		this.drawLineAndPath();
+*/
+		this.addXandYAxisClosedBar();
+		this.drawLineAndPathClosedBar();
+	}
+
+	onChangeObjTimeDropDownNewChart(newObj) {
+		this.selectedTimeOption = parseInt(newObj.target.value);
+
+		if (this.selectedTimeOption === 10 || this.selectedTimeOption === 30) {
+			this.data = data.points.slice(0, this.selectedTimeOption);
+		}
+		else if (this.selectedTimeOption === 60) {
+			this.data = data.points;
+		}
+
+		d3.selectAll("#closedBarChartSVG").remove();
+
+		var svg = d3.select("app-line-chart").append("svg").attr("id", "closedBarChartSVG").attr("width", "960").attr("height", "560");
+
+		this.buildSvg();
+		/*
+		this.addXandYAxis();
+		this.drawLineAndPath(); */
+
 		this.addXandYAxisClosedBar();
 		this.drawLineAndPathClosedBar();
 	}
 
 	private buildSvg() {
-		
 		this.svg = d3.select('#areaLineChartSVG')
 			.style("stroke", "#000")
 			.style("fill", "#4682b3");
 
-			this.svgClosedBar = d3.select('#closedBarChartSVG')
+		this.svgClosedBar = d3.select('#closedBarChartSVG')
 			.style("stroke", "#000")
 			.style("fill", "#4682b3");
 	}
@@ -220,26 +259,26 @@ export class LineChartComponent implements OnInit {
 		if (d3.event.sourceEvent && d3.event.sourceEvent.type === 'zoom') return; // ignore brush-by-zoom
 		let s = d3.event.selection || this.x2.range();
 		this.x.domain(s.map(this.x2.invert, this.x2));
-		
+
 		this.focus.selectAll('.bars').remove();//.attr('d', this.area);
 		// re generate bars
-		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S"); 
+		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S");
 		this.focus.append("g").selectAll(".barsG")//.append("g")
-		.data(this.data).enter().append("rect")
-		.attr("x",(d:any)=>{
-			return this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
-			.add(d.time, 'minutes'));
-		})
-		.attr("y",(d:any)=>{
-			return this.y(d["Array"][this.selected]);
-		})
-		.attr("class","bars")
-		.attr("height",(d:any)=>{
-			console.log("this.height "+this.height+"  this.y(d[Array][this.selected] => "+this.y(d["Array"][this.selected]));
-			return this.height-this.y(d["Array"][this.selected]);
-		})
-		.style("fill", "steelblue")
-		.style("width", this.width/this.data.length);
+			.data(this.data).enter().append("rect")
+			.attr("x", (d: any) => {
+				return this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
+					.add(d.time, 'minutes'));
+			})
+			.attr("y", (d: any) => {
+				return this.y(d["Array"][this.selected]);
+			})
+			.attr("class", "bars")
+			.attr("height", (d: any) => {
+				console.log("this.height " + this.height + "  this.y(d[Array][this.selected] => " + this.y(d["Array"][this.selected]));
+				return this.height - this.y(d["Array"][this.selected]);
+			})
+			.style("fill", "steelblue")
+			.style("width", this.width / this.data.length);
 
 		this.focus.select('.axis--x').call(this.xAxis);
 		this.svg.select('.zoom').call(this.zoom.transform, d3Zoom.zoomIdentity
@@ -260,34 +299,34 @@ export class LineChartComponent implements OnInit {
 
 		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S");  // Wed Apr 01 2020 15:30:00 GMT-0500 (Eastern Daylight Time)
 
-        var endDate = inputDateFormat(data.starttime);
-		endDate.setMinutes(endDate.getMinutes()+this.selectedTimeOption);
+		var endDate = inputDateFormat(data.starttime);
+		endDate.setMinutes(endDate.getMinutes() + this.selectedTimeOption);
 
 		this.x.domain([inputDateFormat(data.starttime), endDate]);
-		
+
 		this.y.domain([0, d3Array.max(this.data, (d: any) => { return d["Array"][this.selected]; })])
 
 		this.x2.domain(this.x.domain());
 		this.y2.domain(this.y.domain());
-		
+
 		// create bars
 		this.focus.append("g").selectAll(".barsG")//.append("g")
-		.data(this.data).enter().append("rect")
-		.attr("x",(d:any)=>{
-			return this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
-			.add(d.time, 'minutes'));
-		})
-		.attr("y",(d:any)=>{
-			return this.y(d["Array"][this.selected]);
-		})
-		.attr("class","bars")
-		.attr("height",(d:any)=>{
-			console.log("this.height "+this.height+"  this.y(d[Array][this.selected] => "+this.y(d["Array"][this.selected]));
-			return this.height-this.y(d["Array"][this.selected]);
-		})
-		.style("fill", "steelblue")
-		.style("width",this.width/this.data.length);
-		
+			.data(this.data).enter().append("rect")
+			.attr("x", (d: any) => {
+				return this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
+					.add(d.time, 'minutes'));
+			})
+			.attr("y", (d: any) => {
+				return this.y(d["Array"][this.selected]);
+			})
+			.attr("class", "bars")
+			.attr("height", (d: any) => {
+				console.log("this.height " + this.height + "  this.y(d[Array][this.selected] => " + this.y(d["Array"][this.selected]));
+				return this.height - this.y(d["Array"][this.selected]);
+			})
+			.style("fill", "steelblue")
+			.style("width", this.width / this.data.length);
+
 		this.focus.append('g')
 			.attr('class', 'axis axis--x')
 			.attr('transform', 'translate(0,' + this.height + ')')
@@ -299,21 +338,21 @@ export class LineChartComponent implements OnInit {
 
 		// create brush bars
 		this.context.append("g").selectAll(".barsG")//.append("g")
-		.data(this.data).enter().append("rect")
-		.attr("x",(d:any)=>{
-			return this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
-			.add(d.time, 'minutes'));
-		})
-		.attr("y",(d:any)=>{
-			return this.y2(d["Array"][this.selected]);
-		})
-		.attr("class","bars")
-		.attr("height",(d:any)=>{
-			console.log("this.height "+this.height+"  this.y(d[Array][this.selected] => "+this.y2(d["Array"][this.selected]));
-			return this.height2-this.y2(d["Array"][this.selected]);
-		})
-		.style("fill", "steelblue")
-		.style("width",this.width/this.data.length);
+			.data(this.data).enter().append("rect")
+			.attr("x", (d: any) => {
+				return this.x(moment(inputDateFormat(data.starttime), "hh:00:00")
+					.add(d.time, 'minutes'));
+			})
+			.attr("y", (d: any) => {
+				return this.y2(d["Array"][this.selected]);
+			})
+			.attr("class", "bars")
+			.attr("height", (d: any) => {
+				console.log("this.height " + this.height + "  this.y(d[Array][this.selected] => " + this.y2(d["Array"][this.selected]));
+				return this.height2 - this.y2(d["Array"][this.selected]);
+			})
+			.style("fill", "steelblue")
+			.style("width", this.width / this.data.length);
 
 		this.context.append('g')
 			.attr('class', 'axis axis--x')
@@ -386,26 +425,26 @@ export class LineChartComponent implements OnInit {
 		if (d3.event.sourceEvent && d3.event.sourceEvent.type === 'zoom') return; // ignore brush-by-zoom
 		let s = d3.event.selection || this.x2ClosedBar.range();
 		this.xClosedBar.domain(s.map(this.x2ClosedBar.invert, this.x2ClosedBar));
-		
+
 		this.focusClosedBar.selectAll('.bars').remove();
 		// re generate bars
-		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S"); 
+		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S");
 		this.focusClosedBar.append("g").selectAll(".barsG")
-		.data(this.data).enter().append("rect")
-		.attr("x",(d:any)=>{
-			return this.xClosedBar(moment(inputDateFormat(data.starttime), "hh:00:00")
-			.add(d.time, 'minutes'));
-		})
-		.attr("y",(d:any)=>{
-			return this.yClosedBar(d["Array"][this.selected]);
-		})
-		.attr("class","bars")
-		.attr("height",(d:any)=>{
-			console.log("this.height "+this.height+"  this.y(d[Array][this.selected] => "+this.yClosedBar(d["Array"][this.selected]));
-			return this.height-this.yClosedBar(d["Array"][this.selected]);
-		})
-		.style("fill", "steelblue")
-		.style("width", this.width/this.data.length);
+			.data(this.data).enter().append("rect")
+			.attr("x", (d: any) => {
+				return this.xClosedBar(moment(inputDateFormat(data.starttime), "hh:00:00")
+					.add(d.time, 'minutes'));
+			})
+			.attr("y", (d: any) => {
+				return this.yClosedBar(d["Array"][this.selected]);
+			})
+			.attr("class", "bars")
+			.attr("height", (d: any) => {
+				console.log("this.height " + this.height + "  this.y(d[Array][this.selected] => " + this.yClosedBar(d["Array"][this.selected]));
+				return this.height - this.yClosedBar(d["Array"][this.selected]);
+			})
+			.style("fill", "steelblue")
+			.style("width", this.width / this.data.length);
 
 		this.focusClosedBar.select('.axis--x').call(this.xAxisClosedBar);
 		this.svgClosedBar.select('.zoom').call(this.zoomClosedBar.transform, d3Zoom.zoomIdentity
@@ -427,12 +466,12 @@ export class LineChartComponent implements OnInit {
 		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S");  // Wed Apr 01 2020 15:30:00 GMT-0500 (Eastern Daylight Time)
 
 		var endDate = inputDateFormat(data.starttime);
-		endDate.setMinutes(endDate.getMinutes()+this.selectedTimeOption);
+		endDate.setMinutes(endDate.getMinutes() + this.selectedTimeOption);
 
 		//this.x.domain([inputDateFormat(data.starttime), endDate]);
 
 		this.xClosedBar.domain([inputDateFormat(data.starttime), endDate]);
-		
+
 		this.yClosedBar.domain([0, d3Array.max(this.data, (d: any) => { return d["Array"][this.selected]; })])
 
 		this.x2ClosedBar.domain(this.xClosedBar.domain());
@@ -448,21 +487,21 @@ export class LineChartComponent implements OnInit {
 
 		// create bars
 		this.focusClosedBar.append("g").selectAll(".barsG")//.append("g")
-		.data(this.data).enter().append("rect")
-		.attr("x",(d:any)=>{
-			return this.xClosedBar(moment(inputDateFormat(data.starttime), "hh:00:00")
-			.add(d.time, 'minutes'));
-		})
-		.attr("y",(d:any)=>{
-			return this.yClosedBar(d["Array"][this.selected]);
-		})
-		.attr("class","bars")
-		.attr("height",(d:any)=>{
-			console.log("this.height "+this.height+"  this.y(d[Array][this.selected] => "+this.yClosedBar(d["Array"][this.selected]));
-			return this.height-this.yClosedBar(d["Array"][this.selected]);
-		})
-		.style("fill", "steelblue")
-		.style("width",this.width/this.data.length);
+			.data(this.data).enter().append("rect")
+			.attr("x", (d: any) => {
+				return this.xClosedBar(moment(inputDateFormat(data.starttime), "hh:00:00")
+					.add(d.time, 'minutes'));
+			})
+			.attr("y", (d: any) => {
+				return this.yClosedBar(d["Array"][this.selected]);
+			})
+			.attr("class", "bars")
+			.attr("height", (d: any) => {
+				console.log("this.height " + this.height + "  this.y(d[Array][this.selected] => " + this.yClosedBar(d["Array"][this.selected]));
+				return this.height - this.yClosedBar(d["Array"][this.selected]);
+			})
+			.style("fill", "steelblue")
+			.style("width", this.width / this.data.length);
 
 
 		this.focusClosedBar.append('g')
@@ -474,29 +513,29 @@ export class LineChartComponent implements OnInit {
 			.attr('class', 'axis axis--y')
 			.call(this.yAxisClosedBar);
 
-			/*
-		this.contextClosedBar.append('path')
-			.datum(this.data)
-			.attr('class', 'area')
-			.attr('d', this.area2ClosedBar);*/
-		
+		/*
+	this.contextClosedBar.append('path')
+		.datum(this.data)
+		.attr('class', 'area')
+		.attr('d', this.area2ClosedBar);*/
+
 		// brush of 2nd chart
 		this.contextClosedBar.append("g").selectAll(".barsG")//.append("g")
-		.data(this.data).enter().append("rect")
-		.attr("x",(d:any)=>{
-			return this.xClosedBar(moment(inputDateFormat(data.starttime), "hh:00:00")
-			.add(d.time, 'minutes'));
-		})
-		.attr("y",(d:any)=>{
-			return this.y2ClosedBar(d["Array"][this.selected]);
-		})
-		.attr("class","bars")
-		.attr("height",(d:any)=>{
-			console.log("this.height "+this.height+"  this.y(d[Array][this.selected] => "+this.yClosedBar(d["Array"][this.selected]));
-			return this.height2-this.y2ClosedBar(d["Array"][this.selected]);
-		})
-		.style("fill", "steelblue")
-		.style("width",this.width/this.data.length);
+			.data(this.data).enter().append("rect")
+			.attr("x", (d: any) => {
+				return this.xClosedBar(moment(inputDateFormat(data.starttime), "hh:00:00")
+					.add(d.time, 'minutes'));
+			})
+			.attr("y", (d: any) => {
+				return this.y2ClosedBar(d["Array"][this.selected]);
+			})
+			.attr("class", "bars")
+			.attr("height", (d: any) => {
+				console.log("this.height " + this.height + "  this.y(d[Array][this.selected] => " + this.yClosedBar(d["Array"][this.selected]));
+				return this.height2 - this.y2ClosedBar(d["Array"][this.selected]);
+			})
+			.style("fill", "steelblue")
+			.style("width", this.width / this.data.length);
 
 		this.contextClosedBar.append('g')
 			.attr('class', 'axis axis--x')
