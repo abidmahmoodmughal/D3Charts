@@ -357,13 +357,13 @@ export class LineChartComponent implements OnInit {
 
 		this.brushClosedBar = d3Brush.brushX()
 			.extent([[0, 0], [this.width, this.height2]])
-			.on('brush end', this.brushed.bind(this));
+			.on('brush end', this.brushedClosedBar.bind(this));
 
 		this.zoomClosedBar = d3Zoom.zoom()
 			.scaleExtent([1, Infinity])
 			.translateExtent([[0, 0], [this.width, this.height]])
 			.extent([[0, 0], [this.width, this.height]])
-			.on('zoom', this.zoomed.bind(this));
+			.on('zoom', this.zoomedClosedBar.bind(this));
 
 		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S");
 
@@ -384,11 +384,31 @@ export class LineChartComponent implements OnInit {
 
 	private brushedClosedBar() {
 		if (d3.event.sourceEvent && d3.event.sourceEvent.type === 'zoom') return; // ignore brush-by-zoom
-		let s = d3.event.selection || this.x2.range();
-		this.xClosedBar.domain(s.map(this.x2.invert, this.x2));
-		this.focusClosedBar.select('.area').attr('d', this.area);
-		this.focusClosedBar.select('.axis--x').call(this.xAxis);
-		this.svgClosedBar.select('.zoom').call(this.zoom.transform, d3Zoom.zoomIdentity
+		let s = d3.event.selection || this.x2ClosedBar.range();
+		this.xClosedBar.domain(s.map(this.x2ClosedBar.invert, this.x2ClosedBar));
+		
+		this.focusClosedBar.selectAll('.bars').remove();
+		// re generate bars
+		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S"); 
+		this.focusClosedBar.append("g").selectAll(".barsG")
+		.data(this.data).enter().append("rect")
+		.attr("x",(d:any)=>{
+			return this.xClosedBar(moment(inputDateFormat(data.starttime), "hh:00:00")
+			.add(d.time, 'minutes'));
+		})
+		.attr("y",(d:any)=>{
+			return this.yClosedBar(d["Array"][this.selected]);
+		})
+		.attr("class","bars")
+		.attr("height",(d:any)=>{
+			console.log("this.height "+this.height+"  this.y(d[Array][this.selected] => "+this.yClosedBar(d["Array"][this.selected]));
+			return this.height-this.yClosedBar(d["Array"][this.selected]);
+		})
+		.style("fill", "steelblue")
+		.style("width", this.width/this.data.length);
+
+		this.focusClosedBar.select('.axis--x').call(this.xAxisClosedBar);
+		this.svgClosedBar.select('.zoom').call(this.zoomClosedBar.transform, d3Zoom.zoomIdentity
 			.scale(this.width / (s[1] - s[0]))
 			.translate(-s[0], 0));
 	}
