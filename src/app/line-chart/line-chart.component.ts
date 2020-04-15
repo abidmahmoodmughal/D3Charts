@@ -48,6 +48,7 @@ export class LineChartComponent implements OnInit {
 
 	private context: any;
 	private brush: any;
+	private brush2: any;
 	private zoom: any;
 	private area2: d3Shape.Area<[number, number]>;
 	private focus: any;
@@ -59,6 +60,10 @@ export class LineChartComponent implements OnInit {
 	private previousS0:any;
 	private previousS1:any;
 	private brushGroup:any;
+
+	private previousS02:any;
+	private previousS12:any;
+	private brushGroup2:any;
 
 	constructor() {
 		// configure margins and width/height of the graph  
@@ -136,6 +141,10 @@ export class LineChartComponent implements OnInit {
 			.extent([[0, 0], [this.width, this.height2]])
 			.on('brush end', this.brushed.bind(this));
 
+		this.brush2 = d3Brush.brushX()
+		.extent([[0, 0], [this.width, this.height]])
+		.on('brush end', this.brushed2.bind(this));
+
 		this.zoom = d3Zoom.zoom()
 			.scaleExtent([1, Infinity])
 			.translateExtent([[0, 0], [this.width, this.height]])
@@ -204,6 +213,33 @@ export class LineChartComponent implements OnInit {
 			.translate(-s[0], 0));
 	}
 
+	private brushed2() {
+		if (d3.event.sourceEvent && d3.event.sourceEvent.type === 'zoom') return; // ignore brush-by-zoom
+		let s = d3.event.selection || this.x.range();
+
+		if((((s[1] - s[0])/this.width)*this.data.length) < this.selectedTimeOption){
+			this.brushGroup2.call(this.brush2.move, [this.previousS02, this.previousS12]);
+			return;
+		  };
+		  this.previousS02 = s[0];
+		  this.previousS12 = s[1];
+/*
+
+		this.x2.domain(s.map(this.x.invert, this.x));
+
+		this.focus.selectAll('.bars').remove();//.attr('d', this.area);
+		// re generate bars
+		var inputDateFormat = d31.timeParse("%a %b %d %Y %H:%M:%S");
+		
+		this.focus.select('.area').attr('d', this.area);
+
+		this.focus.select('.axis--x').call(this.xAxis);
+		this.svg.select('.zoom').call(this.zoom.transform, d3Zoom.zoomIdentity
+			.scale(this.width / (s[1] - s[0]))
+			.translate(-s[0], 0));
+		*/
+	}
+
 	private zoomed() {
 		if (d3.event.sourceEvent && d3.event.sourceEvent.type === 'brush') return; // ignore zoom-by-brush
 		let t = d3.event.transform;
@@ -262,6 +298,13 @@ export class LineChartComponent implements OnInit {
 			.attr('class', 'brush')
 			.call(this.brush)
 			.call(this.brush.move, this.x.range());
+			//[x(60), x(120)]
+		
+		
+		this.brushGroup2 = this.focus.append('g')
+			.attr('class', 'brush')
+			.call(this.brush2)
+			.call(this.brush2.move, this.x.range());
 
 		this.svg.append('rect')
 			.style("fill", "transparent")
