@@ -194,10 +194,10 @@ export class LineChartComponent implements OnInit {
 		if((((s[1] - s[0])/this.width)*this.data.length) < 5){
 			this.brushGroup.call(this.brush.move, [this.previousS0, this.previousS1]);
 			return;
-		  };
-		  this.previousS0 = s[0];
-		  this.previousS1 = s[1];
-
+		}
+		
+		this.previousS0 = s[0];
+		this.previousS1 = s[1];
 
 		this.x.domain(s.map(this.x2.invert, this.x2));
 
@@ -294,13 +294,23 @@ export class LineChartComponent implements OnInit {
 			.attr('transform', 'translate(0,' + this.height2 + ')')
 			.call(this.xAxis2);
 
+		let maxWidth =  0;
+		if(this.selectedTimeOption==10){
+			maxWidth=this.width/2;
+		}
+		else if(this.selectedTimeOption==30){
+			maxWidth=this.width/6;
+		}
+		else if(this.selectedTimeOption==60){
+			maxWidth=this.width/12;
+		}
+
+		// restrict first chart brush to max 5 size window
 		this.brushGroup = this.context.append('g')
 			.attr('class', 'brush')
 			.call(this.brush)
-			.call(this.brush.move, this.x.range());
-			//[x(60), x(120)]
-		
-		
+			.call(this.brush.move, [0,maxWidth]);//this.x.range());
+					
 		this.brushGroup2 = this.focus.append('g')
 			.attr('class', 'brush')
 			.call(this.brush2)
