@@ -310,6 +310,11 @@ export class LineChartComponent implements OnInit {
 			.attr('class', 'brush')
 			.call(this.brush)
 			.call(this.brush.move, [0,maxWidth]);//this.x.range());
+		
+		// removes handle to resize the brush
+		this.context.selectAll('.brush>.handle').remove();
+		// removes crosshair cursor
+		//this.context.selectAll('.brush>.overlay').remove();
 					
 		this.brushGroup2 = this.focus.append('g')
 			.attr('class', 'brush')
